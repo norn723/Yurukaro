@@ -1,77 +1,95 @@
-//
-//  AppTheme.swift
-//  Yurukaro
-//
-//  Created by 衛藤唯花 on 2026/04/18.
-//
-
 import SwiftUI
 
+/// テーマの実体（色セット）
 struct AppTheme {
-    let name: String
-    let backgroundColor: Color
-    let surfaceColor: Color
-    let primaryTextColor: Color
-    let secondaryTextColor: Color
-    let buttonColor: Color
-    let buttonTextColor: Color
-    let accentColor: Color
-    let backgroundPatternImageName: String?
-    let backgroundPatternOpacity: Double
-    let buttonCornerRadius: CGFloat
-    let cardCornerRadius: CGFloat
-}
 
-extension AppThemeStyle {
-    var theme: AppTheme {
-        switch self {
+    let name: String
+    let background: Color
+    let accent: Color
+    let accentDark: Color
+    let card: Color
+
+    /// 互換用：古いViewで使っている名前
+    var backgroundColor: Color {
+        background
+    }
+
+    var surfaceColor: Color {
+        card
+    }
+
+    var primaryTextColor: Color {
+        Color.black.opacity(0.86)
+    }
+
+    var secondaryTextColor: Color {
+        Color.black.opacity(0.48)
+    }
+
+    var buttonTextColor: Color {
+        Color.white
+    }
+
+    var buttonColor: Color {
+        accent
+    }
+
+    var buttonCornerRadius: CGFloat {
+        18
+    }
+
+    var cardCornerRadius: CGFloat {
+        24
+    }
+
+    /// 今はドット画像を使わないため nil。
+    /// ThemedBackgroundView 側がこの値を見ても落ちないように残す。
+    var backgroundPatternImageName: String? {
+        nil
+    }
+    
+    var backgroundPatternOpacity: Double {
+        0.0
+    }
+
+    /// テーマ生成
+    static func theme(for style: AppThemeStyle) -> AppTheme {
+        switch style {
+
         case .mint:
             return AppTheme(
-                name: "ミントドット",
-                backgroundColor: Color(red: 0.88, green: 0.96, blue: 0.95),
-                surfaceColor: Color.white.opacity(0.58),
-                primaryTextColor: Color(red: 0.22, green: 0.28, blue: 0.30),
-                secondaryTextColor: Color(red: 0.42, green: 0.49, blue: 0.50),
-                buttonColor: Color.white.opacity(0.35),
-                buttonTextColor: Color(red: 0.20, green: 0.27, blue: 0.29),
-                accentColor: Color(red: 0.63, green: 0.84, blue: 0.81),
-                backgroundPatternImageName: "theme_mint_dots",
-                backgroundPatternOpacity: 0.30,
-                buttonCornerRadius: 18,
-                cardCornerRadius: 24
+                name: "ミント",
+                background: Color(red: 0.88, green: 0.98, blue: 0.95),
+                accent: Color(red: 0.48, green: 0.82, blue: 0.75),
+                accentDark: Color(red: 0.28, green: 0.70, blue: 0.62),
+                card: Color.white.opacity(0.96)
             )
 
         case .pink:
             return AppTheme(
-                name: "ピンクドット",
-                backgroundColor: Color(red: 1.00, green: 0.93, blue: 0.95),
-                surfaceColor: Color.white.opacity(0.58),
-                primaryTextColor: Color(red: 0.34, green: 0.25, blue: 0.29),
-                secondaryTextColor: Color(red: 0.53, green: 0.42, blue: 0.46),
-                buttonColor: Color.white.opacity(0.35),
-                buttonTextColor: Color(red: 0.34, green: 0.25, blue: 0.29),
-                accentColor: Color(red: 0.97, green: 0.72, blue: 0.79),
-                backgroundPatternImageName: "theme_pink_dots",
-                backgroundPatternOpacity: 0.30,
-                buttonCornerRadius: 18,
-                cardCornerRadius: 24
+                name: "ピンク",
+                background: Color(red: 1.00, green: 0.92, blue: 0.95),
+                accent: Color(red: 1.00, green: 0.56, blue: 0.72),
+                accentDark: Color(red: 0.88, green: 0.34, blue: 0.56),
+                card: Color.white.opacity(0.96)
             )
 
         case .lavender:
             return AppTheme(
-                name: "ラベンダードット",
-                backgroundColor: Color(red: 0.95, green: 0.93, blue: 1.00),
-                surfaceColor: Color.white.opacity(0.58),
-                primaryTextColor: Color(red: 0.28, green: 0.25, blue: 0.36),
-                secondaryTextColor: Color(red: 0.45, green: 0.42, blue: 0.56),
-                buttonColor: Color.white.opacity(0.35),
-                buttonTextColor: Color(red: 0.28, green: 0.25, blue: 0.36),
-                accentColor: Color(red: 0.77, green: 0.71, blue: 0.96),
-                backgroundPatternImageName: "theme_lavender_dots",
-                backgroundPatternOpacity: 0.30,
-                buttonCornerRadius: 18,
-                cardCornerRadius: 24
+                name: "ラベンダー",
+                background: Color(red: 0.95, green: 0.92, blue: 1.00),
+                accent: Color(red: 0.66, green: 0.56, blue: 0.90),
+                accentDark: Color(red: 0.50, green: 0.40, blue: 0.76),
+                card: Color.white.opacity(0.96)
             )
         }
+    }
+}
+
+/// AppThemeStyle.theme という古い書き方にも対応させる
+extension AppThemeStyle {
+
+    var theme: AppTheme {
+        AppTheme.theme(for: self)
     }
 }

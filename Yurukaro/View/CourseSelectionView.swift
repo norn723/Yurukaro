@@ -11,8 +11,8 @@ struct CourseSelectionView: View {
     /// 毎日同じ目安コースへ進むフラグ
     @State private var showDailyBalanceSetting = false
 
-    /// 期限つきコースの仮画面へ進むフラグ
-    @State private var showDietPlaceholder = false
+    /// 期限つきコースの本画面へ進むフラグ
+    @State private var showDeadlineGoalSetting = false
 
     /// この画面で選ばれたコース
     @State private var selectedCourse: AppCourse? = nil
@@ -43,8 +43,8 @@ struct CourseSelectionView: View {
             )
             .environmentObject(appDataStore)
         }
-        .navigationDestination(isPresented: $showDietPlaceholder) {
-            DeadlineCoursePlaceholderView(
+        .navigationDestination(isPresented: $showDeadlineGoalSetting) {
+            DeadlineGoalSettingView(
                 enteredMaintenanceCalories: enteredMaintenanceCalories
             )
             .environmentObject(appDataStore)
@@ -115,7 +115,7 @@ private extension CourseSelectionView {
             courseCard(
                 theme: theme,
                 title: "期限つきで目標管理",
-                description: "何日間かで目標収支を達成したい人向け。合計目標収支・方向・日数や期限を決めて進めます。",
+                description: "未来の日付を選んで、その日までの総目標収支から1日あたりの必要収支を自動で計算します。",
                 course: .diet
             )
 
@@ -197,7 +197,7 @@ private extension CourseSelectionView {
 
             switch selectedCourse {
             case .diet:
-                showDietPlaceholder = true
+                showDeadlineGoalSetting = true
             case .maintenance:
                 showDailyBalanceSetting = true
             }
@@ -224,63 +224,5 @@ private extension CourseSelectionView {
         }
         .disabled(selectedCourse == nil)
         .opacity(selectedCourse == nil ? 0.45 : 1.0)
-    }
-}
-
-/// コース1の仮画面
-/// 今回は分岐だけ先につなぎ、本実装は次で作る
-struct DeadlineCoursePlaceholderView: View {
-    @EnvironmentObject var appDataStore: AppDataStore
-
-    /// 前画面で入力されたメンテナンスカロリー
-    let enteredMaintenanceCalories: Int
-
-    var body: some View {
-        let theme = appDataStore.settings.selectedTheme.theme
-
-        ThemedScreenContainer {
-            ScrollView(showsIndicators: false) {
-                VStack(spacing: 24) {
-                    VStack(spacing: 16) {
-                        Text("期限つきコースは次で本実装")
-                            .font(.system(size: 24, weight: .bold))
-                            .foregroundStyle(theme.primaryTextColor)
-                            .multilineTextAlignment(.center)
-
-                        Text("今は分岐確認までできています。")
-                            .font(.system(size: 15, weight: .medium))
-                            .foregroundStyle(theme.secondaryTextColor)
-
-                        VStack(spacing: 10) {
-                            Text("保存されているメンテナンスカロリー")
-                                .font(.system(size: 14, weight: .medium))
-                                .foregroundStyle(theme.secondaryTextColor)
-
-                            Text("\(enteredMaintenanceCalories) kcal")
-                                .font(.system(size: 28, weight: .bold))
-                                .foregroundStyle(theme.primaryTextColor)
-                        }
-
-                        Text("次はこのコース用に、合計目標収支・方向・日数または期限を入力する画面をつなぎます。")
-                            .font(.system(size: 14))
-                            .foregroundStyle(theme.secondaryTextColor)
-                            .multilineTextAlignment(.center)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
-                    .padding(24)
-                    .frame(maxWidth: .infinity)
-                    .background {
-                        ThemedCardBackground(theme: theme)
-                    }
-                    .padding(.top, 40)
-                }
-                .frame(maxWidth: .infinity)
-                .padding(.horizontal, 16)
-                .padding(.bottom, 40)
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        }
-        .navigationTitle("期限つきコース")
-        .navigationBarTitleDisplayMode(.inline)
     }
 }

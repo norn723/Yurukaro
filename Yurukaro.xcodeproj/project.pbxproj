@@ -24,27 +24,14 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		66640E582F9134CD00101D5C /* Yurukaro.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = Yurukaro.app; path = "/Users/etouyuihana/ゆるカロ/Yurukaro/Yurukaro/build/Debug-iphoneos/Yurukaro.app"; sourceTree = "<absolute>"; };
-		66640E652F9134CF00101D5C /* YurukaroTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = YurukaroTests.xctest; path = "/Users/etouyuihana/ゆるカロ/Yurukaro/Yurukaro/build/Debug-iphoneos/Yurukaro.app/PlugIns/YurukaroTests.xctest"; sourceTree = "<absolute>"; };
-		66640E6F2F9134CF00101D5C /* YurukaroUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = YurukaroUITests.xctest; path = "/Users/etouyuihana/ゆるカロ/Yurukaro/Yurukaro/build/Debug-iphoneos/YurukaroUITests-Runner.app/PlugIns/YurukaroUITests.xctest"; sourceTree = "<absolute>"; };
+		0E3228522F95AD9D000ADC9E /* Yurukaro.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Yurukaro.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		0E3228532F95AD9D000ADC9E /* YurukaroTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = YurukaroTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		0E3228542F95AD9D000ADC9E /* YurukaroUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = YurukaroUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
-
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		66640EA52F932BDE00101D5C /* Exceptions for "Yurukaro" folder in "Yurukaro" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				View/Untitled.swift,
-			);
-			target = 66640E572F9134CD00101D5C /* Yurukaro */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		66640E5A2F9134CD00101D5C /* Yurukaro */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				66640EA52F932BDE00101D5C /* Exceptions for "Yurukaro" folder in "Yurukaro" target */,
-			);
 			path = Yurukaro;
 			sourceTree = "<group>";
 		};
@@ -91,6 +78,9 @@
 				66640E5A2F9134CD00101D5C /* Yurukaro */,
 				66640E682F9134CF00101D5C /* YurukaroTests */,
 				66640E722F9134CF00101D5C /* YurukaroUITests */,
+				0E3228522F95AD9D000ADC9E /* Yurukaro.app */,
+				0E3228532F95AD9D000ADC9E /* YurukaroTests.xctest */,
+				0E3228542F95AD9D000ADC9E /* YurukaroUITests.xctest */,
 			);
 			sourceTree = "<group>";
 		};
@@ -116,7 +106,7 @@
 			packageProductDependencies = (
 			);
 			productName = Yurukaro;
-			productReference = 66640E582F9134CD00101D5C /* Yurukaro.app */;
+			productReference = 0E3228522F95AD9D000ADC9E /* Yurukaro.app */;
 			productType = "com.apple.product-type.application";
 		};
 		66640E642F9134CF00101D5C /* YurukaroTests */ = {
@@ -139,7 +129,7 @@
 			packageProductDependencies = (
 			);
 			productName = YurukaroTests;
-			productReference = 66640E652F9134CF00101D5C /* YurukaroTests.xctest */;
+			productReference = 0E3228532F95AD9D000ADC9E /* YurukaroTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		66640E6E2F9134CF00101D5C /* YurukaroUITests */ = {
@@ -162,7 +152,7 @@
 			packageProductDependencies = (
 			);
 			productName = YurukaroUITests;
-			productReference = 66640E6F2F9134CF00101D5C /* YurukaroUITests.xctest */;
+			productReference = 0E3228542F95AD9D000ADC9E /* YurukaroUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -399,7 +389,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 9T87V26WAH;
+				DEVELOPMENT_TEAM = 34A7AYH435;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -412,7 +402,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.yuika.Yurukaro;
+				PRODUCT_BUNDLE_IDENTIFIER = com.norn723.yurukaro;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -431,7 +421,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 9T87V26WAH;
+				DEVELOPMENT_TEAM = 34A7AYH435;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -444,7 +434,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.yuika.Yurukaro;
+				PRODUCT_BUNDLE_IDENTIFIER = com.norn723.yurukaro;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
