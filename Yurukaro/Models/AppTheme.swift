@@ -1,15 +1,15 @@
 import SwiftUI
 
-/// テーマの実体（色セット）
 struct AppTheme {
 
     let name: String
     let background: Color
+    let card: Color
     let accent: Color
     let accentDark: Color
-    let card: Color
 
-    /// 互換用：古いViewで使っている名前
+    // MARK: - 互換用プロパティ
+
     var backgroundColor: Color {
         background
     }
@@ -42,51 +42,76 @@ struct AppTheme {
         24
     }
 
-    /// 今はドット画像を使わないため nil。
-    /// ThemedBackgroundView 側がこの値を見ても落ちないように残す。
     var backgroundPatternImageName: String? {
         nil
     }
-    
+
     var backgroundPatternOpacity: Double {
         0.0
     }
 
-    /// テーマ生成
+    // MARK: - Theme Factory
+
     static func theme(for style: AppThemeStyle) -> AppTheme {
         switch style {
 
         case .mint:
             return AppTheme(
                 name: "ミント",
-                background: Color(red: 0.88, green: 0.98, blue: 0.95),
-                accent: Color(red: 0.48, green: 0.82, blue: 0.75),
-                accentDark: Color(red: 0.28, green: 0.70, blue: 0.62),
-                card: Color.white.opacity(0.96)
+                background: Color(red: 0.85, green: 0.98, blue: 0.95),
+                card: Color.white.opacity(0.9),
+                accent: Color.mint,
+                accentDark: Color.green
             )
 
         case .pink:
             return AppTheme(
                 name: "ピンク",
-                background: Color(red: 1.00, green: 0.92, blue: 0.95),
-                accent: Color(red: 1.00, green: 0.56, blue: 0.72),
-                accentDark: Color(red: 0.88, green: 0.34, blue: 0.56),
-                card: Color.white.opacity(0.96)
+                background: Color(red: 1.0, green: 0.9, blue: 0.95),
+                card: Color.white.opacity(0.9),
+                accent: Color.pink,
+                accentDark: Color.red
             )
 
         case .lavender:
             return AppTheme(
                 name: "ラベンダー",
-                background: Color(red: 0.95, green: 0.92, blue: 1.00),
-                accent: Color(red: 0.66, green: 0.56, blue: 0.90),
-                accentDark: Color(red: 0.50, green: 0.40, blue: 0.76),
-                card: Color.white.opacity(0.96)
+                background: Color(red: 0.93, green: 0.9, blue: 1.0),
+                card: Color.white.opacity(0.9),
+                accent: Color.purple,
+                accentDark: Color.purple.opacity(0.8)
+            )
+
+        case .peach:
+            return AppTheme(
+                name: "ピーチ",
+                background: Color(red: 1.0, green: 0.92, blue: 0.85),
+                card: Color.white.opacity(0.9),
+                accent: Color.orange,
+                accentDark: Color.orange.opacity(0.8)
+            )
+
+        case .sky:
+            return AppTheme(
+                name: "スカイ",
+                background: Color(red: 0.85, green: 0.93, blue: 1.0),
+                card: Color.white.opacity(0.9),
+                accent: Color.blue,
+                accentDark: Color.blue.opacity(0.8)
+            )
+
+        case .lemon:
+            return AppTheme(
+                name: "レモン",
+                background: Color(red: 1.0, green: 1.0, blue: 0.85),
+                card: Color.white.opacity(0.9),
+                accent: Color.yellow,
+                accentDark: Color.orange
             )
         }
     }
 }
 
-/// AppThemeStyle.theme という古い書き方にも対応させる
 extension AppThemeStyle {
 
     var theme: AppTheme {

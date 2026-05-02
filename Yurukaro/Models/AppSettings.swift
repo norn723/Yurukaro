@@ -32,11 +32,19 @@ enum AppThemeStyle: String, Codable, CaseIterable {
     case pink
     case lavender
 
+    // 追加テーマ
+    case peach
+    case sky
+    case lemon
+
     var displayName: String {
         switch self {
         case .mint: return "ミント"
         case .pink: return "ピンク"
         case .lavender: return "ラベンダー"
+        case .peach: return "ピーチ"
+        case .sky: return "スカイ"
+        case .lemon: return "レモン"
         }
     }
 }
@@ -45,19 +53,18 @@ struct AppSettings: Codable {
 
     var maintenanceCalories: Int
     var selectedCourse: AppCourse
+
     var goalDirection: GoalDirection?
 
     var targetDailyBalance: Int?
     var targetTotalBalance: Int?
+
     var goalDurationDays: Int?
-
-    /// 目標の開始日
     var goalStartDate: Date?
-
-    /// 目標の期限日
     var targetDeadline: Date?
 
     var targetIntakeCalories: Int?
+
     var hasCompletedInitialSetup: Bool
     var selectedTheme: AppThemeStyle
 

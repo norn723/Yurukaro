@@ -9,73 +9,130 @@ struct DailyBalanceSettingView: View {
 
     @State private var selectedDirection: GoalDirection = .minus
     @State private var rawBalanceText: String = ""
-
     @State private var showSavedAlert = false
 
+    private var theme: AppTheme {
+        AppTheme.theme(for: appDataStore.settings.selectedTheme)
+    }
+
     var body: some View {
-        VStack(spacing: 20) {
+        ZStack {
+            theme.background
+                .ignoresSafeArea()
 
-            Text("毎日の目標設定")
-                .font(.title.bold())
+            ScrollView {
+                VStack(spacing: 20) {
 
-            // 方向選択
-            Picker("方向", selection: $selectedDirection) {
-                Text("プラス").tag(GoalDirection.plus)
-                Text("マイナス").tag(GoalDirection.minus)
-                Text("維持").tag(GoalDirection.maintain)
-            }
-            .pickerStyle(.segmented)
+                    Text("毎日の目標設定")
+                        .font(.system(size: 26, weight: .bold))
 
-            // 入力
-            VStack(alignment: .leading) {
-                Text("1日の目標収支")
-                TextField("例: 300", text: $rawBalanceText)
-                    .keyboardType(.numberPad)
-                    .textFieldStyle(.roundedBorder)
-            }
+                    // 方向選択
+                    Picker("方向", selection: $selectedDirection) {
+                        Text("プラス").tag(GoalDirection.plus)
+                        Text("マイナス").tag(GoalDirection.minus)
+                        Text("維持").tag(GoalDirection.maintain)
+                    }
+                    .pickerStyle(.segmented)
+                    .onChange(of: selectedDirection) { newValue in
+                        if newValue == .maintain {
+                            rawBalanceText = "0"
+                        } else if rawBalanceText == "0" {
+                            rawBalanceText = ""
+                        }
+                    }
 
-            // 計算結果
-            if isValid {
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("1日あたり：\(signedBalance) kcal")
-                    Text("目標摂取：\(targetIntakeCalories) kcal")
-                }
-            }
+                    // 入力カード
+                    VStack(alignment: .leading, spacing: 10) {
 
-            // 保存ボタン
-            Button {
-                save()
-            } label: {
-                Text("保存")
-                    .frame(maxWidth: .infinity)
+                        Text("1日の目標収支")
+                            .font(.system(size: 15, weight: .semibold))
+
+                        if selectedDirection == .maintain {
+
+                            Text("維持の場合は自動的に 0 kcal になります")
+                                .font(.system(size: 13))
+                                .foregroundStyle(.secondary)
+
+                            Text("0 kcal")
+                                .font(.system(size: 18, weight: .bold))
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding()
+                                .background(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .fill(theme.card)
+                                )
+
+                        } else {
+
+                            TextField("例: 300", text: $rawBalanceText)
+                                .keyboardType(.numberPad)
+                                .textFieldStyle(.roundedBorder)
+
+                            Text("プラス：増量 / マイナス：減量の目安")
+                                .font(.system(size: 13))
+                                .foregroundStyle(.secondary)
+                        }
+                    }
                     .padding()
-                    .background(isValid ? Color.blue : Color.gray)
-                    .foregroundStyle(.white)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
-            }
-            .disabled(!isValid)
+                    .background(
+                        RoundedRectangle(cornerRadius: 20)
+                            .fill(theme.card)
+                    )
 
-            Spacer()
-        }
-        .padding()
-        .alert("保存しました", isPresented: $showSavedAlert) {
-            Button("OK") {
-                dismiss()
+                    // 結果
+                    if isValid {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("1日あたり：\(signedBalanceText) kcal")
+                            Text("目標摂取：\(targetIntakeCalories) kcal")
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding()
+                        .background(
+                            RoundedRectangle(cornerRadius: 20)
+                                .fill(theme.accent.opacity(0.15))
+                        )
+                    }
+
+                    // 保存
+                    Button {
+                        save()
+                    } label: {
+                        Text("保存")
+                            .font(.system(size: 18, weight: .bold))
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 56)
+                            .background(
+                                RoundedRectangle(cornerRadius: 18)
+                                    .fill(isValid ? theme.accent : Color.gray)
+                            )
+                            .foregroundStyle(.white)
+                    }
+                    .disabled(!isValid)
+
+                    Spacer(minLength: 40)
+                }
+                .padding()
             }
+        }
+        .alert("保存しました", isPresented: $showSavedAlert) {
+            Button("OK") { dismiss() }
         }
     }
 
-    // MARK: - 計算
+    // MARK: 計算
 
     private var rawBalance: Int {
-        Int(rawBalanceText) ?? 0
+        selectedDirection == .maintain ? 0 : (Int(rawBalanceText) ?? 0)
     }
 
     private var signedBalance: Int {
-        appDataStore.signedBalance(
-            direction: selectedDirection,
-            rawValue: rawBalance
-        )
+        selectedDirection == .maintain
+        ? 0
+        : appDataStore.signedBalance(direction: selectedDirection, rawValue: rawBalance)
+    }
+
+    private var signedBalanceText: String {
+        signedBalance >= 0 ? "+\(signedBalance)" : "\(signedBalance)"
     }
 
     private var targetIntakeCalories: Int {
@@ -83,19 +140,17 @@ struct DailyBalanceSettingView: View {
     }
 
     private var isValid: Bool {
-        rawBalance > 0
+        selectedDirection == .maintain || rawBalance > 0
     }
 
-    // MARK: - 保存
+    // MARK: 保存
 
     private func save() {
-
         appDataStore.saveMaintenanceCourseSettings(
             direction: selectedDirection,
             dailyBalance: signedBalance,
             targetIntakeCalories: targetIntakeCalories
         )
-
         showSavedAlert = true
     }
 }
