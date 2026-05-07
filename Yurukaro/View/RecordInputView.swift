@@ -92,7 +92,6 @@ struct RecordInputView: View {
 
                         reflectModePickerSection
                         calculatorPadSection
-                        reflectButtonSection
                     }
                     .padding(.horizontal, 16)
                     .padding(.top, 10)
@@ -189,7 +188,7 @@ struct RecordInputView: View {
         HStack {
             Text(
                 isCalculatorPresented
-                ? "下の電卓で計算して、加算か減算を選んでから「反映する」を押してね"
+                ? "下の電卓で入力すると、上の摂取・消費に保存後の数字がすぐ表示されるよ"
                 : "「摂取」または「消費」のカードを押すと入力を始められるよ"
             )
             .font(.system(size: 14, weight: .medium))
@@ -207,8 +206,8 @@ struct RecordInputView: View {
             HStack(spacing: 12) {
                 tappableInfoCard(
                     title: dateLabelPrefix + "摂取",
-                    value: "\(baseIntakeCalories) kcal",
-                    subtitle: isCalculatorPresented && selectedMode == .intake ? "入力中" : "タップで入力",
+                    value: "\(displayedIntakeCalories) kcal",
+                    subtitle: intakeCardSubtitle,
                     isHighlighted: isCalculatorPresented && selectedMode == .intake
                 ) {
                     openCalculator(for: .intake)
@@ -216,8 +215,8 @@ struct RecordInputView: View {
 
                 tappableInfoCard(
                     title: dateLabelPrefix + "消費",
-                    value: "\(baseExerciseCalories) kcal",
-                    subtitle: isCalculatorPresented && selectedMode == .exercise ? "入力中" : "タップで入力",
+                    value: "\(displayedExerciseCalories) kcal",
+                    subtitle: exerciseCardSubtitle,
                     isHighlighted: isCalculatorPresented && selectedMode == .exercise
                 ) {
                     openCalculator(for: .exercise)
@@ -288,6 +287,13 @@ struct RecordInputView: View {
                         .font(.system(size: 34, weight: .bold))
                         .lineLimit(1)
                         .minimumScaleFactor(0.6)
+                }
+
+                if isCalculatorPresented && pendingCalculatedValue != 0 {
+                    Text(previewDescriptionText)
+                        .font(.system(size: 13, weight: .bold))
+                        .foregroundStyle(.secondary)
+                        .padding(.top, 2)
                 }
             }
             .padding(18)
@@ -476,23 +482,6 @@ struct RecordInputView: View {
         }
     }
 
-    private var reflectButtonSection: some View {
-        Button {
-            reflectCalculatedValue()
-        } label: {
-            Text(reflectButtonTitle)
-                .font(.system(size: 18, weight: .bold))
-                .frame(maxWidth: .infinity)
-                .frame(height: 48)
-                .background(
-                    RoundedRectangle(cornerRadius: 18)
-                        .fill(theme.accentDark)
-                )
-                .foregroundStyle(.white)
-        }
-        .buttonStyle(.plain)
-    }
-
     private enum CalculatorButtonStyle {
         case number
         case operatorButton
@@ -621,6 +610,8 @@ struct RecordInputView: View {
 
         print("after expression = \(calculatorExpression)")
         print("after result = \(calculatorResultText)")
+        print("displayedIntakeCalories = \(displayedIntakeCalories)")
+        print("displayedExerciseCalories = \(displayedExerciseCalories)")
         print("===== appendToExpression END =====")
     }
 
@@ -652,7 +643,10 @@ struct RecordInputView: View {
             print("operator appended")
         }
 
+        updatePreviewResultWithoutForcingEqual()
+
         print("after expression = \(calculatorExpression)")
+        print("after result = \(calculatorResultText)")
         print("===== appendOperator END =====")
     }
 
@@ -662,6 +656,8 @@ struct RecordInputView: View {
         calculatorResultText = "0"
         print("expression cleared")
         print("result reset")
+        print("displayedIntakeCalories = \(displayedIntakeCalories)")
+        print("displayedExerciseCalories = \(displayedExerciseCalories)")
         print("===== clearAll END =====")
     }
 
@@ -680,6 +676,8 @@ struct RecordInputView: View {
 
         print("after expression = \(calculatorExpression)")
         print("after result = \(calculatorResultText)")
+        print("displayedIntakeCalories = \(displayedIntakeCalories)")
+        print("displayedExerciseCalories = \(displayedExerciseCalories)")
         print("===== deleteLastCharacter END =====")
     }
 
@@ -689,6 +687,8 @@ struct RecordInputView: View {
         calculatorResultText = "\(calculatedValue)"
         print("expression = \(calculatorExpression)")
         print("result = \(calculatorResultText)")
+        print("displayedIntakeCalories = \(displayedIntakeCalories)")
+        print("displayedExerciseCalories = \(displayedExerciseCalories)")
         print("===== calculateExpression END =====")
     }
 
@@ -804,56 +804,54 @@ struct RecordInputView: View {
         return result
     }
 
-    // MARK: - Reflect
-
-    private func reflectCalculatedValue() {
-        print("===== reflectCalculatedValue START =====")
-        print("selectedMode = \(selectedMode == .intake ? "intake" : "exercise")")
-        print("selectedReflectMode = \(selectedReflectMode == .add ? "add" : "subtract")")
-        print("calculatorExpression = \(calculatorExpression)")
-        print("pendingCalculatedValue = \(pendingCalculatedValue)")
-
-        let value = pendingCalculatedValue
-
-        guard value != 0 else {
-            print("pendingCalculatedValue is 0, nothing reflected")
-            print("===== reflectCalculatedValue END =====")
-            return
-        }
-
-        let signedValue: Int = selectedReflectMode == .add ? value : -value
-
-        switch selectedMode {
-        case .intake:
-            baseIntakeCalories = max(0, baseIntakeCalories + signedValue)
-            print("baseIntakeCalories updated = \(baseIntakeCalories)")
-
-        case .exercise:
-            baseExerciseCalories = max(0, baseExerciseCalories + signedValue)
-            print("baseExerciseCalories updated = \(baseExerciseCalories)")
-        }
-
-        let historyType: RecordHistoryEntry.EntryType = selectedMode == .intake ? .intake : .exercise
-
-        let entry = RecordHistoryEntry(
-            targetDate: targetDate,
-            createdAt: Date(),
-            type: historyType,
-            calories: signedValue
-        )
-
-        appDataStore.addHistoryEntry(entry)
-        loadDisplayedHistoryEntries()
-
-        resetCalculatorForCurrentMode()
-
-        print("===== reflectCalculatedValue END =====")
-    }
-
     // MARK: - Calculated Values
 
     private var pendingCalculatedValue: Int {
         evaluatedCalculatorValue()
+    }
+
+    private var signedPendingCalculatedValue: Int {
+        selectedReflectMode == .add ? pendingCalculatedValue : -pendingCalculatedValue
+    }
+
+    private var displayedIntakeCalories: Int {
+        guard isCalculatorPresented, selectedMode == .intake else {
+            return baseIntakeCalories
+        }
+
+        return max(0, baseIntakeCalories + signedPendingCalculatedValue)
+    }
+
+    private var displayedExerciseCalories: Int {
+        guard isCalculatorPresented, selectedMode == .exercise else {
+            return baseExerciseCalories
+        }
+
+        return max(0, baseExerciseCalories + signedPendingCalculatedValue)
+    }
+
+    private var intakeCardSubtitle: String {
+        guard isCalculatorPresented, selectedMode == .intake else {
+            return "タップで入力"
+        }
+
+        if pendingCalculatedValue == 0 {
+            return "入力中"
+        }
+
+        return selectedReflectMode == .add ? "保存後の摂取" : "保存後の摂取"
+    }
+
+    private var exerciseCardSubtitle: String {
+        guard isCalculatorPresented, selectedMode == .exercise else {
+            return "タップで入力"
+        }
+
+        if pendingCalculatedValue == 0 {
+            return "入力中"
+        }
+
+        return selectedReflectMode == .add ? "保存後の消費" : "保存後の消費"
     }
 
     private var calculatorDisplayTitle: String {
@@ -865,12 +863,15 @@ struct RecordInputView: View {
         }
     }
 
-    private var reflectButtonTitle: String {
-        switch selectedReflectMode {
-        case .add:
-            return "加算で反映する"
-        case .subtract:
-            return "減算で反映する"
+    private var previewDescriptionText: String {
+        let signedValue = signedPendingCalculatedValue
+        let operationText = signedValue >= 0 ? "+\(signedValue)" : "\(signedValue)"
+
+        switch selectedMode {
+        case .intake:
+            return "保存すると摂取が \(baseIntakeCalories) kcal → \(displayedIntakeCalories) kcal（\(operationText) kcal）"
+        case .exercise:
+            return "保存すると消費が \(baseExerciseCalories) kcal → \(displayedExerciseCalories) kcal（\(operationText) kcal）"
         }
     }
 
@@ -883,13 +884,48 @@ struct RecordInputView: View {
         print("baseExerciseCalories = \(baseExerciseCalories)")
         print("calculatorExpression = \(calculatorExpression)")
         print("calculatorResultText = \(calculatorResultText)")
+        print("selectedMode = \(selectedMode == .intake ? "intake" : "exercise")")
+        print("selectedReflectMode = \(selectedReflectMode == .add ? "add" : "subtract")")
+        print("pendingCalculatedValue = \(pendingCalculatedValue)")
         print("displayedHistoryEntries.count = \(displayedHistoryEntries.count)")
-        print("保存は反映済みの値だけを使う")
+        print("保存時に入力中の値を確定する")
+
+        let value = pendingCalculatedValue
+        let signedValue = selectedReflectMode == .add ? value : -value
+
+        var finalIntakeCalories = baseIntakeCalories
+        var finalExerciseCalories = baseExerciseCalories
+
+        if value != 0 {
+            switch selectedMode {
+            case .intake:
+                finalIntakeCalories = max(0, baseIntakeCalories + signedValue)
+                print("finalIntakeCalories updated = \(finalIntakeCalories)")
+
+            case .exercise:
+                finalExerciseCalories = max(0, baseExerciseCalories + signedValue)
+                print("finalExerciseCalories updated = \(finalExerciseCalories)")
+            }
+
+            let historyType: RecordHistoryEntry.EntryType = selectedMode == .intake ? .intake : .exercise
+
+            let entry = RecordHistoryEntry(
+                targetDate: targetDate,
+                createdAt: Date(),
+                type: historyType,
+                calories: signedValue
+            )
+
+            appDataStore.addHistoryEntry(entry)
+            print("history entry added")
+        } else {
+            print("pendingCalculatedValue is 0, only current base values will be saved")
+        }
 
         let newRecord = DailyRecord(
             date: targetDate,
-            intakeCalories: baseIntakeCalories,
-            exerciseCalories: baseExerciseCalories,
+            intakeCalories: finalIntakeCalories,
+            exerciseCalories: finalExerciseCalories,
             maintenanceCalories: appDataStore.settings.maintenanceCalories ?? 0
         )
 

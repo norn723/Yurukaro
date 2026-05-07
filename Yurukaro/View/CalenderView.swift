@@ -20,6 +20,9 @@ struct CalendarView: View {
     /// 曜日表示
     private let weekdaySymbols: [String] = ["S", "M", "T", "W", "T", "F", "S"]
 
+    /// カレンダー罫線色
+    private let calendarLineColor = Color.gray.opacity(0.20)
+
     var body: some View {
         ZStack {
             theme.background
@@ -29,8 +32,7 @@ struct CalendarView: View {
                 VStack(spacing: 18) {
                     headerSection
                     monthHeaderSection
-                    weekdayHeaderSection
-                    calendarGridSection
+                    calendarBoardSection
                     selectedDateDetailSection
                 }
                 .padding(.horizontal, 20)
@@ -106,26 +108,49 @@ struct CalendarView: View {
         }
     }
 
+    // MARK: - Calendar Board
+
+    private var calendarBoardSection: some View {
+        VStack(spacing: 0) {
+            weekdayHeaderSection
+            calendarGridSection
+        }
+        .background(Color.white.opacity(0.92))
+        .clipShape(RoundedRectangle(cornerRadius: 18))
+        .overlay(
+            RoundedRectangle(cornerRadius: 18)
+                .stroke(calendarLineColor, lineWidth: 1)
+        )
+    }
+
     // MARK: - Weekday Header
 
     private var weekdayHeaderSection: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: 0) {
             ForEach(Array(weekdaySymbols.enumerated()), id: \.offset) { index, symbol in
                 Text(symbol)
-                    .font(.system(size: 13, weight: .bold))
+                    .font(.system(size: 15, weight: .bold))
                     .foregroundStyle(colorForWeekdayIndex(index))
                     .frame(maxWidth: .infinity)
+                    .frame(height: 38)
+                    .background(theme.accent.opacity(0.10))
+                    .overlay(
+                        Rectangle()
+                            .stroke(calendarLineColor, lineWidth: 0.8)
+                    )
             }
         }
-        .padding(.horizontal, 4)
     }
 
     // MARK: - Calendar Grid
 
     private var calendarGridSection: some View {
-        let columns = Array(repeating: GridItem(.flexible(), spacing: 8), count: 7)
+        let columns = Array(
+            repeating: GridItem(.flexible(), spacing: 0),
+            count: 7
+        )
 
-        return LazyVGrid(columns: columns, spacing: 8) {
+        return LazyVGrid(columns: columns, spacing: 0) {
             ForEach(calendarDays(), id: \.self) { optionalDate in
                 if let date = optionalDate {
                     dayCell(for: date)
@@ -139,12 +164,19 @@ struct CalendarView: View {
     private func dayCell(for date: Date) -> some View {
         let isSelected = Calendar.current.isDate(date, inSameDayAs: selectedDate)
         let isToday = Calendar.current.isDateInToday(date)
-        let isInDisplayedMonth = Calendar.current.isDate(date, equalTo: displayedMonth, toGranularity: .month)
+        let isInDisplayedMonth = Calendar.current.isDate(
+            date,
+            equalTo: displayedMonth,
+            toGranularity: .month
+        )
+
         let record = appDataStore.record(for: date)
 
         return Button {
             print("===== Calendar day tapped START =====")
+
             selectedDate = date
+
             print("selectedDate = \(selectedDate)")
 
             if let record {
@@ -158,49 +190,61 @@ struct CalendarView: View {
             }
 
             print("===== Calendar day tapped END =====")
-        } label: {
-            VStack(spacing: 5) {
-                Text(dayNumberText(for: date))
-                    .font(.system(size: 20, weight: .bold))
-                    .foregroundStyle(
-                        isToday
-                        ? theme.accentDark
-                        : (isInDisplayedMonth ? .primary : .secondary)
-                    )
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.8)
-                    .fixedSize(horizontal: true, vertical: false)
 
-                Spacer(minLength: 0)
+        } label: {
+
+            ZStack {
+
+                VStack {
+                    HStack {
+                        Text(dayNumberText(for: date))
+                            .font(.system(size: 18, weight: .bold))
+                            .foregroundStyle(
+                                isToday
+                                ? theme.accentDark
+                                : (isInDisplayedMonth ? colorForDate(date) : .secondary)
+                            )
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.85)
+
+                        Spacer()
+                    }
+
+                    Spacer()
+                }
+                .padding(.top, 6)
+                .padding(.leading, 6)
 
                 if let record {
+
                     Text(compactCaloriesText(record.intakeCalories))
-                        .font(.system(size: 10, weight: .bold))
+                        .font(.system(size: 22, weight: .bold))
                         .foregroundStyle(theme.accentDark)
                         .lineLimit(1)
-                        .minimumScaleFactor(0.7)
-                        .fixedSize(horizontal: false, vertical: true)
-                } else {
-                    Text(" ")
-                        .font(.system(size: 10, weight: .bold))
+                        .minimumScaleFactor(0.45)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+                        .offset(y: 6)
+                        .padding(.horizontal, 2)
                 }
             }
-            .padding(.top, 10)
-            .padding(.bottom, 8)
-            .padding(.horizontal, 4)
-            .frame(height: 82)
+            .frame(height: 86)
             .frame(maxWidth: .infinity)
             .background(
-                RoundedRectangle(cornerRadius: 16)
-                    .fill(isSelected ? theme.accent.opacity(0.24) : theme.card)
+                isSelected
+                ? theme.accent.opacity(0.22)
+                : Color.white.opacity(0.92)
             )
             .overlay(
-                RoundedRectangle(cornerRadius: 16)
+                Rectangle()
+                    .stroke(calendarLineColor, lineWidth: 0.8)
+            )
+            .overlay(
+                Rectangle()
                     .stroke(
                         isSelected
                         ? theme.accentDark
                         : (isToday ? theme.accent.opacity(0.55) : Color.clear),
-                        lineWidth: isSelected ? 2 : 1.5
+                        lineWidth: isSelected ? 2 : 1.3
                     )
             )
         }
@@ -209,9 +253,13 @@ struct CalendarView: View {
     }
 
     private var emptyDayCell: some View {
-        RoundedRectangle(cornerRadius: 16)
-            .fill(Color.clear)
-            .frame(height: 82)
+        Rectangle()
+            .fill(Color.white.opacity(0.92))
+            .frame(height: 86)
+            .overlay(
+                Rectangle()
+                    .stroke(calendarLineColor, lineWidth: 0.8)
+            )
     }
 
     // MARK: - Selected Date Detail
@@ -390,6 +438,18 @@ struct CalendarView: View {
             return .blue.opacity(0.8)
         } else {
             return .secondary
+        }
+    }
+
+    private func colorForDate(_ date: Date) -> Color {
+        let weekday = Calendar.current.component(.weekday, from: date)
+
+        if weekday == 1 {
+            return .red.opacity(0.8)
+        } else if weekday == 7 {
+            return .blue.opacity(0.8)
+        } else {
+            return .primary
         }
     }
 }

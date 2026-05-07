@@ -18,8 +18,8 @@ struct HomeView: View {
                 VStack(spacing: 20) {
                     headerSection
                     statusSection
-                    goalProgressSection
                     actionSection
+                    goalProgressSection
                 }
                 .padding(.horizontal, 20)
                 .padding(.top, 16)
